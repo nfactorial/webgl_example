@@ -10,4 +10,5 @@ window.addEventListener('load', () => {
     }
 
     ApplicationInstance = new Application(CANVAS_ID);
+    ApplicationInstance.onInitialize();
 });
