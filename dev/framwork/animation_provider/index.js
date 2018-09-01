@@ -50,7 +50,7 @@ function onAnimationFrame(timeStamp) {
  */
 export function requestAnimation(cb) {
     requestList.forEach((entry) => {
-        if (entry.cb === cb) {
+        if (!entry.disposing && entry.cb === cb) {
             throw new Error('Animation request has already been made.');
         }
     });
