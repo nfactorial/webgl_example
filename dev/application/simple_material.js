@@ -1,6 +1,8 @@
 import { AttributeType } from '@nfactorial/webgl_helper';
 
 const VERTEX_SHADER_SRC = [
+    'precision mediump float;',
+    '',
     'attribute vec3 position;',
     '',
     'uniform mat4 worldTransform;',
@@ -16,6 +18,8 @@ const VERTEX_SHADER_SRC = [
 ].join('\n');
 
 const FRAGMENT_SHADER_SRC = [
+    'precision mediump float;',
+    '',
     'void main() {',
     '    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',
     '}',

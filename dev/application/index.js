@@ -90,16 +90,16 @@ export default class Application {
 
         const vertices = new Float32Array(3 * 3);
 
-        vertices[0] = -0.5;
-        vertices[1] = 0.5;
+        vertices[0] = -1.0;
+        vertices[1] = 1.0;
         vertices[2] = 0;
 
         vertices[3] = 0;
-        vertices[4] = -0.5;
+        vertices[4] = -1.0;
         vertices[5] = 0;
 
-        vertices[6] = 0.5;
-        vertices[7] = 0.5;
+        vertices[6] = 1.0;
+        vertices[7] = 1.0;
         vertices[8] = 0;
 
         const material = createMaterial(gl, SIMPLE_MATERIAL);
@@ -124,6 +124,9 @@ export default class Application {
      */
     onAnimate(deltaTime) {
         this.timer += deltaTime;
+
+        const offset = Math.sin(this.timer * 3.0) * 5.0;
+        WebGLDisplay.Math.Vector3.set(this.position, 0.0, 0.0, -10 + offset);
 
         WebGLDisplay.Math.Quaternion.identity(this.orientation);
         WebGLDisplay.Math.Quaternion.rotateZ(this.orientation, this.orientation, this.timer);
