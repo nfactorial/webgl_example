@@ -1,4 +1,4 @@
-import AttributeType from '@nfactorial/webgl_helper';
+import { AttributeType } from '@nfactorial/webgl_helper';
 
 const VERTEX_SHADER_SRC = [
     'attribute vec3 position;',
@@ -17,17 +17,17 @@ const VERTEX_SHADER_SRC = [
 
 const FRAGMENT_SHADER_SRC = [
     'void main() {',
-    '    gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);',
+    '    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',
     '}',
 ].join('\n');
 
 const ATTRIBUTES = [
     {
+        name: 'position',
         type: AttributeType.Float,
         size: 3,
         normalized: false,
         stride: 0,
-        offset: 0,
     },
 ];
 

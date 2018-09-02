@@ -7,14 +7,3 @@ body, app {
     overflow: hidden;
     display: block;
 }
-
-.application-canvas {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}

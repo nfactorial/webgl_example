@@ -9,6 +9,22 @@ import SIMPLE_MATERIAL from './simple_material';
 
 WebGLDisplay.PipelineProvider.register(RENDER_PIPELINE);
 
+let COLOR_INDEX = 0;
+const CLEAR_COLORS = [
+    {
+        r: 1.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    },
+    {
+        r: 0.0,
+        g: 1.0,
+        b: 0.0,
+        a: 1.0,
+    },
+];
+
 /**
  * Core wrapper around our demonstration.
  *
@@ -24,6 +40,8 @@ export default class Application {
         if (!canvas) {
             throw new Error(`Could not find canvas element '${canvasId}'.`);
         }
+
+        this.gl = null;
 
         this.cameraPosition = WebGLDisplay.Math.Vector3.create();
         this.cameraOrientation = WebGLDisplay.Math.Quaternion.create();
@@ -69,15 +87,15 @@ export default class Application {
         const vertices = new Float32Array(3 * 3);
 
         vertices[0] = -0.5;
-        vertices[1] = -0.5;
+        vertices[1] = 0.5;
         vertices[2] = 0;
 
         vertices[3] = 0;
-        vertices[4] = 0.5;
+        vertices[4] = -0.5;
         vertices[5] = 0;
 
         vertices[6] = 0.5;
-        vertices[7] = -0.5;
+        vertices[7] = 0.5;
         vertices[8] = 0;
 
         const material = this._createMaterial(gl, SIMPLE_MATERIAL);
@@ -92,6 +110,8 @@ export default class Application {
         this.drawRequest.primitiveCount = 1;
         this.drawRequest.materialInstance = material.createInstance();
 
+        this.gl = gl;
+
         AnimationProvider.requestAnimation(this.onAnimate);
     }
 
@@ -100,6 +120,8 @@ export default class Application {
      */
     onAnimate() {
         this.timer += 1.0 / 60; // TODO: Real time step
+
+        COLOR_INDEX = COLOR_INDEX ^ 0x01;
 
         WebGLDisplay.Math.Quaternion.identity(this.orientation);
         WebGLDisplay.Math.Quaternion.rotateZ(this.orientation, this.orientation, this.timer);
@@ -126,6 +148,20 @@ export default class Application {
      * @param {DrawRequestProvider} requestProvider - Object that will accept our draw calls.
      */
     onDrawRequest(requestProvider) {
+        // Clearing will eventually be the responsibility of the render pipeline, rather than the application.
+        // It will be configurable via the pipeline.json description.
+        this.renderer.state.setClearColor(
+            CLEAR_COLORS[COLOR_INDEX].r,
+            CLEAR_COLORS[COLOR_INDEX].g,
+            CLEAR_COLORS[COLOR_INDEX].b,
+            CLEAR_COLORS[COLOR_INDEX].a,
+        );
+        this.renderer.state.clearDepth = 1.0;
+
+        // Viewport will also be the responsibility of the rendering framework
+        this.gl.viewport(0, 0, 640, 480);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
         // TODO: This will eventually be managed by the scene
         WebGLDisplay.Math.Matrix4.fromRotationTranslation(this.drawRequest.worldTransform, this.orientation, this.position);
         WebGLDisplay.Math.Vector3.copy(this.drawRequest.worldPosition, this.position);
@@ -139,6 +175,7 @@ export default class Application {
         material.phase = desc.phase;
         material.program = new WebGLHelper.Program();
         material.program.initialize(gl, desc.vertexShader, desc.fragmentShader);
+        material.program.setAttributes(desc.attributes);
 
         material.initialize(gl);
 
