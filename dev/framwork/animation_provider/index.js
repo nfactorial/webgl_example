@@ -1,6 +1,25 @@
+/**
+ * This module wraps the requestAnimationFrame API.
+ * Application code may request an animation callback by invoking the requestAnimation method.
+ * This method accepts a function, that will be invoked each animation step. It will be provided with the
+ * delta time step that has elapsed since the last update.
+ *
+ * When an object no-longer wishes to receive animation callbacks, it should supply the function to the
+ * cancelAnimation method.
+ */
 
+let lastTime = 0;
 let disposeCount = 0;
+
+const MILLISECONDS_PER_SECOND = 1000;
+
 const requestList = [];
+
+/**
+ * Holds the object that will provide the animation system the current time stamp.
+ * @type {Performance|Date}
+ */
+const timeProvider = (window.performance && window.performance.now) ? window.performance : Date;
 
 /**
  * Removes all entities that are currently waiting to be removed from the list.
@@ -21,19 +40,26 @@ function disposeEntries() {
 
 /**
  * Handles the animation frame supplied by the browser.
- * @param timeStamp
+ * @param {number} timeStamp
  */
 function onAnimationFrame(timeStamp) {
-    const count = requestList.length;
-    for (let loop = 0; loop < count; ++loop) {
-        const entry = requestList[loop];
+    const currentTime = timeProvider.now();
+    const deltaTime = currentTime - lastTime;
 
-        if (!entry.disposing) {
-            if (!entry.start) {
-                entry.start = timeStamp;
+    lastTime = currentTime;
+
+    if (deltaTime > 0) {
+        const count = requestList.length;
+        for (let loop = 0; loop < count; ++loop) {
+            const entry = requestList[loop];
+
+            if (!entry.disposing) {
+                if (!entry.start) {
+                    entry.start = timeStamp;
+                }
+
+                entry.cb(deltaTime / MILLISECONDS_PER_SECOND);
             }
-
-            entry.cb(timeStamp);
         }
     }
 
@@ -49,11 +75,12 @@ function onAnimationFrame(timeStamp) {
  * @param {function} cb - The callback to be invoked each animation frame.
  */
 export function requestAnimation(cb) {
-    requestList.forEach((entry) => {
-        if (!entry.disposing && entry.cb === cb) {
+    const count = requestList.length;
+    for (let loop = 0; loop < count; loop++) {
+        if (!requestList[loop].disposing && requestList[loop].cb === cb) {
             throw new Error('Animation request has already been made.');
         }
-    });
+    }
 
     requestList.push({
         cb,
@@ -63,6 +90,7 @@ export function requestAnimation(cb) {
     });
 
     if (requestList.length === 1) {
+        lastTime = timeProvider.now();
         requestAnimationFrame(onAnimationFrame);
     }
 }

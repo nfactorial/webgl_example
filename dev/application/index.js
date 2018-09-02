@@ -122,8 +122,8 @@ export default class Application {
     /**
      * This callback is invoked each frame update, allowing us to perform any animation required.
      */
-    onAnimate() {
-        this.timer += 1.0 / 60; // TODO: Real time step
+    onAnimate(deltaTime) {
+        this.timer += deltaTime;
 
         WebGLDisplay.Math.Quaternion.identity(this.orientation);
         WebGLDisplay.Math.Quaternion.rotateZ(this.orientation, this.orientation, this.timer);
