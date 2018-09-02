@@ -3,7 +3,17 @@
   "pass": [
     {
       "name": "main",
-      "target": "display"
+      "target": "display",
+      "clearFlags": {
+        "color": true,
+        "depth": true
+      },
+      "clearColor": {
+        "r": 1,
+        "g": 1,
+        "b": 1
+      },
+      "clearDepth": 1
     }
   ]
 }
