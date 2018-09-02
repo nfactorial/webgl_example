@@ -59,6 +59,8 @@ export default class Application {
         this.renderer = new WebGLDisplay.Renderer();
         this.renderer.initialize(canvas, {
             webgl2: false,
+            antialias: true,
+            preserveDrawingBuffer: false,
         });
 
         this.timer = 0;
