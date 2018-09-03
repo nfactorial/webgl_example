@@ -45,7 +45,14 @@ export default class Application {
             throw new Error(`Could not find canvas element '${canvasId}'.`);
         }
 
-        this.gl = null;
+        this._onClickFullscreen = this._onClickFullscreen.bind(this);
+
+        this.fullScreenElement = document.getElementById('go-fullscreen');
+        if (WebGLDisplay.FullScreen.isAvailable()) {
+            this.fullScreenElement.addEventListener('click', this._onClickFullscreen);
+        } else {
+            this.fullScreenElement.style.display = 'none';
+        }
 
         this.cameraPosition = WebGLDisplay.Math.Vector3.create();
         this.cameraOrientation = WebGLDisplay.Math.Quaternion.create();
@@ -88,8 +95,6 @@ export default class Application {
         WebGLDisplay.Math.Matrix4.identity(this.orientation);
         WebGLDisplay.Math.Vector3.set(this.position, 0, 0, -10);
 
-        const gl = this.renderer.context;
-
         const vertices = new Float32Array(3 * 3);
 
         vertices[0] = -1.0;
@@ -104,10 +109,10 @@ export default class Application {
         vertices[7] = 1.0;
         vertices[8] = 0;
 
-        const material = createMaterial(gl, SIMPLE_MATERIAL);
+        const material = createMaterial(this.renderer.context, SIMPLE_MATERIAL);
 
         this.drawRequest.vertexBuffer = new WebGLHelper.ArrayBuffer();
-        this.drawRequest.vertexBuffer.initialize(gl, gl.STATIC_DRAW);
+        this.drawRequest.vertexBuffer.initialize(this.renderer.context, this.renderer.context.STATIC_DRAW);
         this.drawRequest.vertexBuffer.bind(this.renderer.state);
         this.drawRequest.vertexBuffer.bufferData(vertices);
 
@@ -115,8 +120,6 @@ export default class Application {
         this.drawRequest.start = 0;
         this.drawRequest.primitiveCount = 1;
         this.drawRequest.materialInstance = material.createInstance();
-
-        this.gl = gl;
 
         AnimationProvider.requestAnimation(this.onAnimate);
     }
@@ -155,13 +158,14 @@ export default class Application {
      * @param {DrawRequestProvider} requestProvider - Object that will accept our draw calls.
      */
     onDrawRequest(requestProvider) {
-        // Viewport will also be the responsibility of the rendering framework
-        this.gl.viewport(0, 0, 640, 480);
-
         // TODO: This will eventually be managed by the scene
         WebGLDisplay.Math.Matrix4.fromRotationTranslation(this.drawRequest.worldTransform, this.orientation, this.position);
         WebGLDisplay.Math.Vector3.copy(this.drawRequest.worldPosition, this.position);
 
         requestProvider.addRequest(this.drawRequest);
+    }
+
+    _onClickFullscreen() {
+        WebGLDisplay.FullScreen.enterFullScreen(this.renderer.canvas);
     }
 }

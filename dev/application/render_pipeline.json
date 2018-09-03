@@ -1,6 +1,6 @@
 {
   "name": "simple",
-  "pass": [
+  "phase": [
     {
       "name": "main",
       "target": "display",
