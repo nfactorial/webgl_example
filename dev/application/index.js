@@ -92,7 +92,7 @@ export default class Application {
      * Prepares the application for rendering
      */
     onInitialize() {
-        WebGLDisplay.Math.Matrix4.identity(this.orientation);
+        WebGLDisplay.Math.Quaternion.identity(this.orientation);
         WebGLDisplay.Math.Vector3.set(this.position, 0, 0, -10);
 
         const vertices = new Float32Array(3 * 3);
@@ -119,7 +119,7 @@ export default class Application {
         this.drawRequest.primitiveType = WebGLHelper.PrimitiveType.TriangleList;
         this.drawRequest.start = 0;
         this.drawRequest.primitiveCount = 1;
-        this.drawRequest.materialInstance = material.createInstance();
+        this.drawRequest.material = material;
 
         AnimationProvider.requestAnimation(this.onAnimate);
     }

@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.0.0",
-    "@nfactorial/webgl_display": "0.0.24",
+    "@nfactorial/webgl_display": "0.0.26",
     "@nfactorial/webgl_helper": "0.0.17",
     "babel-loader": "^8.0.0",
     "babel-preset-env": "^1.7.0"
