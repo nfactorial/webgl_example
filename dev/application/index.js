@@ -40,8 +40,8 @@ function createMaterial(gl, desc) {
  */
 export default class Application {
     constructor(canvasId) {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) {
             throw new Error(`Could not find canvas element '${canvasId}'.`);
         }
 
@@ -64,7 +64,7 @@ export default class Application {
         this.onAnimate = this.onAnimate.bind(this);
 
         this.renderer = new WebGLDisplay.Renderer();
-        this.renderer.initialize(canvas, {
+        this.renderer.initialize(this.canvas, {
             webgl2: false,
             antialias: true,
             preserveDrawingBuffer: false,
@@ -142,15 +142,23 @@ export default class Application {
     /**
      * Fills the supplied object with information about our camera.
      * @param {CameraArgs} cameraArgs - Object we must fill with information about our camera.
+     * @param {RenderArgs} renderArgs - Object describing the current frame being rendered.
      */
-    getCameraArgs(cameraArgs) {
+    getCameraArgs(cameraArgs, renderArgs) {
         WebGLDisplay.Math.Quaternion.copy(cameraArgs.orientation, this.cameraOrientation);
         WebGLDisplay.Math.Vector3.copy(cameraArgs.position, this.cameraPosition);
+
+        cameraArgs.aspectRatio = renderArgs.targetInfo.width / renderArgs.targetInfo.height;
 
         cameraArgs.fieldOfView = Math.PI / 2;
         cameraArgs.farPlane = 300;
         cameraArgs.nearPlane = 0.1;
         cameraArgs.type = WebGLDisplay.CameraType.Perspective;
+
+        cameraArgs.orthoHeight = 10;
+        cameraArgs.orthoWidth = 10 * cameraArgs.aspectRatio;
+        //cameraArgs.orthoWidth = 10 * (this.canvas.width / this.canvas.height);
+        //cameraArgs.type = WebGLDisplay.CameraType.Orthographic;
     }
 
     /**
