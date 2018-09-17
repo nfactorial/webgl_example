@@ -113,7 +113,7 @@ export default class Application {
 
         this.drawRequest.vertexBuffer = new WebGLHelper.ArrayBuffer();
         this.drawRequest.vertexBuffer.initialize(this.renderer.context, this.renderer.context.STATIC_DRAW);
-        this.drawRequest.vertexBuffer.bind(this.renderer.state);
+        this.renderer.state.bindArrayBuffer(this.drawRequest.vertexBuffer.id);
         this.drawRequest.vertexBuffer.bufferData(vertices);
 
         this.drawRequest.primitiveType = WebGLHelper.PrimitiveType.TriangleList;
@@ -142,13 +142,13 @@ export default class Application {
     /**
      * Fills the supplied object with information about our camera.
      * @param {CameraArgs} cameraArgs - Object we must fill with information about our camera.
-     * @param {RenderArgs} renderArgs - Object describing the current frame being rendered.
+     * @param {DisplayPort} displayPort - The display port being rendered.
      */
-    getCameraArgs(cameraArgs, renderArgs) {
+    getCameraArgs(cameraArgs, displayPort) {
         WebGLDisplay.Math.Quaternion.copy(cameraArgs.orientation, this.cameraOrientation);
         WebGLDisplay.Math.Vector3.copy(cameraArgs.position, this.cameraPosition);
 
-        cameraArgs.aspectRatio = renderArgs.targetInfo.width / renderArgs.targetInfo.height;
+        cameraArgs.aspectRatio = displayPort.width / displayPort.height;
 
         cameraArgs.fieldOfView = Math.PI / 2;
         cameraArgs.farPlane = 300;

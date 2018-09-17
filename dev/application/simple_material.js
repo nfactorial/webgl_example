@@ -31,7 +31,8 @@ const ATTRIBUTES = [
         type: AttributeType.Float,
         size: 3,
         normalized: false,
-        stride: 0,
+        offset: 0,
+        stride: 12,
     },
 ];
 
